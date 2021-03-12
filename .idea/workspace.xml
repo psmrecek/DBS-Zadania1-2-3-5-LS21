@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0bc5924e-fc83-480c-8aa9-d5858ffbb32a" name="Default Changelist" comment="" />
+    <list default="true" id="0bc5924e-fc83-480c-8aa9-d5858ffbb32a" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/Zadanie1_app/views2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DBS_Zadanie1/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/DBS_Zadanie1/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Zadanie1_app/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/Zadanie1_app/urls.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DjangoConsoleOptions" custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)">
+    <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -27,7 +35,12 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Tutorial/djangoapp" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/Zadanie1_app" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\PeterSmrecek\Documents\DBS\DBS_Zadanie1\Zadanie1_app" />
+    </key>
   </component>
   <component name="RunManager">
     <configuration name="DBS_Zadanie1" type="Python.DjangoServer" factoryName="Django server">
@@ -67,11 +80,43 @@
       <workItem from="1613842787361" duration="3180000" />
       <workItem from="1614091951464" duration="8413000" />
       <workItem from="1614163539099" duration="1501000" />
-      <workItem from="1614330274780" duration="902000" />
+      <workItem from="1614330274780" duration="2370000" />
+      <workItem from="1614507906384" duration="612000" />
+      <workItem from="1614540162398" duration="6000" />
+      <workItem from="1614540250711" duration="80000" />
+      <workItem from="1614770954969" duration="952000" />
+      <workItem from="1615241039973" duration="3920000" />
+      <workItem from="1615298304044" duration="18619000" />
+      <workItem from="1615371048039" duration="6139000" />
+      <workItem from="1615397115049" duration="12515000" />
     </task>
+    <task id="LOCAL-00001" summary="Vyriesene 1. zadanie.">
+      <created>1614331245415</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1614331245415</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Vyriesene 1. zadanie." />
+    <option name="LAST_COMMIT_MESSAGE" value="Vyriesene 1. zadanie." />
   </component>
 </project>
