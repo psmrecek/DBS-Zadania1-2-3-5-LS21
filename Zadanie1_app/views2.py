@@ -1,4 +1,5 @@
 import math
+from datetime import datetime
 
 from django.http import HttpResponse
 from django.http import JsonResponse
@@ -158,14 +159,8 @@ def get_print_pages(request):
     allParameters = request.GET
     print(allParameters)
 
-    # page = request.GET.get('page', '1')
-    # per_page = request.GET.get('per_page', '10')
-    # query = request.GET.get('query', '%')
-    # printv('query', query)
-
     page = allParameters.get('page', '1')
     try:
-
         page_int = int(page)
     except:
         page_int = 1
@@ -223,14 +218,6 @@ def get_print_pages(request):
     query = generate_query(bool_search_string, bool_search_number, order_by, order_type, bool_registration_date_gte, bool_registration_date_lte)
     print(query)
 
-    # variables = {
-    #             "limit": per_page_int,
-    #             "offset": page_offset,
-    #             "search": search,
-    #             "search_int": search_int,
-    #         }
-    # print(variables)
-
     variables = generate_variables(per_page_int, page_offset, bool_search_string, search, bool_search_number, search_int,
                                    bool_registration_date_gte, registration_date_gte, bool_registration_date_lte, registration_date_lte)
     print(variables)
@@ -257,6 +244,13 @@ def get_print_pages(request):
 def post_add_row(request):
     print("post")
 
+    string = "2021-03-12T11:06:48Z"
+    string = string.replace("Z", "+00:00")
+
+    date = datetime.fromisoformat(string)
+    print(date)
+
+
     print(request.POST)
     print(request.GET)
     print(request.body)
@@ -265,10 +259,26 @@ def post_add_row(request):
     return JsonResponse({"method": "POST"})
 
 
-def delete_row(request):
-    print("delete")
+def delete_row(request, id =-1):
 
-    return JsonResponse({"method": "DELETE"})
+    query = """
+            DELETE FROM ov.or_podanie_issues
+            WHERE id = %(id)s
+            RETURNING *;
+            """
+    print(id)
+    variables = {"id": id}
+
+    with connection.cursor() as cursor:
+        cursor.execute(query, variables)
+        items = cursor.fetchall()
+
+    if len(items) == 0:
+        return JsonResponse({"error": {"message": "Záznam neexistuje"}}, status=404)
+    else:
+        return HttpResponse(status=204)
+
+
 
 
 def debug(request):
