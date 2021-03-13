@@ -12,6 +12,7 @@ urlpatterns = [
     path('error', views.error, name="error"),
     path('v1/ov/submissions/first5', views2.first5, name="first5"),
     path('v1/ov/submissions/', views2.url_dispatcher, name="get_print_pages"),
+    path('v1/ov/submissions', views2.url_dispatcher, name="get_print_pages"),
     path('v1/ov/submissions/<int:id>', views2.delete_row, name="delete_row"),
     path('debug', views2.debug, name="debug"),
 

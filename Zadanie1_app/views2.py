@@ -1,3 +1,4 @@
+import json
 import math
 from datetime import datetime
 
@@ -16,7 +17,7 @@ def url_dispatcher(request):
     print(request.path)
     print(request.scheme)
     print(method)
-
+    print('-' * 20)
     response = HttpResponse("")
 
     if method == 'GET':
@@ -66,7 +67,7 @@ def printv(name, variable):
     print(name, type(variable), variable)
 
 
-def generate_query(bool_search_string, bool_search_number, order_by, order_type, bool_registration_date_gte, bool_registration_date_lte):
+def generate_query_get(bool_search_string, bool_search_number, order_by, order_type, bool_registration_date_gte, bool_registration_date_lte):
 
     start = """SELECT id, br_court_name, kind_name, cin, registration_date, corporate_body_name, br_section,
                 br_insertion, text, street, postal_code, city
@@ -107,8 +108,45 @@ def generate_query(bool_search_string, bool_search_number, order_by, order_type,
     return query
 
 
-def generate_variables(limit, offset, bool_search_string, search, bool_search_number, search_int,
-                       bool_registration_date_gte, reg_gte, bool_registration_date_lte, reg_lte):
+def generate_query_metadata(bool_search_string, bool_search_number, bool_registration_date_gte, bool_registration_date_lte):
+
+    start = """ SELECT COUNT(id)
+                FROM ov.or_podanie_issues
+            """
+
+    where = """WHERE """
+    if bool_search_string and bool_search_number:
+        where += """(corporate_body_name ILIKE %(search)s OR city ILIKE %(search)s OR cin = %(search_int)s)
+                """
+    elif bool_search_string:
+        where += """(corporate_body_name ILIKE %(search)s OR city ILIKE %(search)s)
+                """
+    else:
+        where = """"""
+
+    if bool_registration_date_gte or bool_registration_date_lte:
+        if len(where) == 0:
+            where = "WHERE "
+        else:
+            where += " AND "
+
+        if bool_registration_date_gte and bool_registration_date_lte:
+            where += "registration_date >= %(reg_gte)s AND registration_date <= %(reg_lte)s" + "\n"
+        elif bool_registration_date_gte:
+            where += "registration_date >= %(reg_gte)s" + "\n"
+        else:
+            where += "registration_date <= %(reg_lte)s" + "\n"
+
+    end = """LIMIT %(limit)s
+            OFFSET %(offset)s; 
+        """
+
+    query = start + where + end
+
+    return query
+
+def generate_variables_get(limit, offset, bool_search_string, search, bool_search_number, search_int,
+                           bool_registration_date_gte, reg_gte, bool_registration_date_lte, reg_lte):
 
     variables = {"limit": limit, "offset": offset}
 
@@ -127,9 +165,20 @@ def generate_variables(limit, offset, bool_search_string, search, bool_search_nu
     return variables
 
 
-def generate_metadata(page, per_page, pages, total):
+def generate_metadata(page, per_page, variables, bool_search_string, bool_search_number, bool_registration_date_gte, bool_registration_date_lte):
 
-    return {"page": page, "per_page": per_page, "pages": pages, "total": total}
+    query = generate_query_metadata(bool_search_string, bool_search_number, bool_registration_date_gte, bool_registration_date_lte)
+
+    with connection.cursor() as cursor:
+        cursor.execute(query, variables)
+        items = cursor.fetchall()
+
+
+    all_items = items[0][0]
+
+    pages = math.ceil(all_items / per_page)
+
+    return {"page": page, "per_page": per_page, "pages": pages, "total": all_items}
 
 
 def first5(request):
@@ -152,6 +201,18 @@ def first5(request):
     response = JsonResponse(result, safe=False, json_dumps_params={'ensure_ascii': False})
 
     return response
+
+
+def date_validator(date_string):
+
+    try:
+        date_string = date_string.replace("Z", "+00:00")
+        date = datetime.fromisoformat(date_string)
+        bool_valid = True
+    except:
+        bool_valid = False
+
+    return bool_valid
 
 
 def get_print_pages(request):
@@ -186,12 +247,12 @@ def get_print_pages(request):
         search = "%" + search + "%"
 
     registration_date_gte = allParameters.get("registration_date_gte")
-    bool_registration_date_gte = registration_date_gte is not None
+    bool_registration_date_gte = date_validator(registration_date_gte)
     print(bool_registration_date_gte)
     printv("registration_date_gte", registration_date_gte)
 
     registration_date_lte = allParameters.get("registration_date_lte")
-    bool_registration_date_lte = registration_date_lte is not None
+    bool_registration_date_lte = date_validator(registration_date_lte)
     print(bool_registration_date_lte)
     printv("registration_date_lte", registration_date_lte)
 
@@ -205,7 +266,7 @@ def get_print_pages(request):
         order_by = "id"
     printv("order_by", order_by)
 
-    default_order_type = "asc"
+    default_order_type = "desc"
     order_type = allParameters.get("order_type", default_order_type)
     order_type = order_type.lower()
     if order_type not in possible_order_types:
@@ -215,11 +276,11 @@ def get_print_pages(request):
 
     page_offset = (page_int - 1) * per_page_int
 
-    query = generate_query(bool_search_string, bool_search_number, order_by, order_type, bool_registration_date_gte, bool_registration_date_lte)
+    query = generate_query_get(bool_search_string, bool_search_number, order_by, order_type, bool_registration_date_gte, bool_registration_date_lte)
     print(query)
 
-    variables = generate_variables(per_page_int, page_offset, bool_search_string, search, bool_search_number, search_int,
-                                   bool_registration_date_gte, registration_date_gte, bool_registration_date_lte, registration_date_lte)
+    variables = generate_variables_get(per_page_int, page_offset, bool_search_string, search, bool_search_number, search_int,
+                                       bool_registration_date_gte, registration_date_gte, bool_registration_date_lte, registration_date_lte)
     print(variables)
 
     with connection.cursor() as cursor:
@@ -228,11 +289,8 @@ def get_print_pages(request):
 
     items = dates_to_str(items, ["registration_date"])
 
-    len_items = len(items)
-    total = len_items
-    pages = math.ceil(len_items / per_page_int)
-
-    metadata = generate_metadata(page_int, per_page_int, pages, total)
+    metadata = generate_metadata(page_int, per_page_int, variables, bool_search_string, bool_search_number,
+                                 bool_registration_date_gte, bool_registration_date_lte)
 
     result = {"items": items, "metadata": metadata}
 
@@ -241,33 +299,225 @@ def get_print_pages(request):
     return response
 
 
+def string_validator(body_json, key):
+    string = ""
+
+    try:
+        value = body_json[key]
+    except KeyError:
+        return 0
+
+    try:
+        if len(value) == 0:
+            return 0
+    except:
+        return 0
+
+    return 1
+
+
+def number_validator(body_json, key):
+    value = 0
+
+    try:
+        value = body_json[key]
+    except KeyError:
+        return 0
+
+    if isinstance(value, int):
+        return 1
+    else:
+        return -1
+
+
+def date_validator_post(body_json, key):
+    value = ""
+
+    try:
+        value = body_json[key]
+    except KeyError:
+        return 0
+
+    if date_validator(value):
+        now = datetime.now()
+        value = value.replace("Z", "+00:00")
+        date = datetime.fromisoformat(value)
+        if now.year == date.year:
+            return 1
+
+    return -1
+
+
+def generate_error_response_post(list_bools, list_names):
+    text = []
+
+    for i in range(len(list_bools)):
+        if list_bools[i] == 0:
+            error = {"field": list_names[i], "reasons": ["required"]}
+            text.append(error)
+
+        if list_bools[i] == -1 and list_names[i] == "registration_date":
+            error = {"field": list_names[i], "reasons": ["invalid_range"]}
+            text.append(error)
+
+        if list_bools[i] == -1 and list_names[i] == "cin":
+            error = {"field": list_names[i], "reasons": ["not_number"]}
+            text.append(error)
+
+    response = JsonResponse({"errors": text}, status=422, safe=False)
+    return response
+
+
+def insert_bulletin_post():
+    now = datetime.now()
+    current_year = now.year
+
+    query_last_item = """
+                        SELECT id, year, number, published_at
+                        FROM ov.bulletin_issues
+                        ORDER BY id DESC
+                        LIMIT 1;
+    """
+
+    with connection.cursor() as cursor:
+        cursor.execute(query_last_item)
+        items = cursor.fetchall()
+
+    insert_year = current_year
+    insert_number = items[0][2] + 1
+    if items[0][1] != current_year:
+        insert_number = 1
+
+    # last_published_at = items[0][3]
+    # last_id = items[0][0]
+    # if last_published_at.year == now.year and last_published_at.month == now.month and last_published_at.day == now.day:
+    #     return last_id
+
+    query_insert = """
+                    INSERT INTO ov.bulletin_issues(year, number, published_at, created_at, updated_at)
+                    VALUES (%(year)s, %(number)s, CURRENT_DATE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                    RETURNING id;
+    """
+    variables = variables = {"year": insert_year, "number": insert_number}
+
+    with connection.cursor() as cursor:
+        cursor.execute(query_insert, variables)
+        return_id = cursor.fetchall()
+
+    return return_id[0][0]
+
+
+def insert_raw_post(bulletin_id_given):
+
+    query = """
+            INSERT INTO ov.raw_issues(bulletin_issue_id, file_name, content, created_at, updated_at)
+            VALUES (%(bulletin_id)s, '-', '-', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            RETURNING id;
+    """
+    variables = {"bulletin_id": bulletin_id_given}
+
+    with connection.cursor() as cursor:
+        cursor.execute(query, variables)
+        return_id = cursor.fetchall()
+
+    return return_id[0][0]
+
+
+def insert_podanie(body_json, id_bulletin, id_raw):
+
+    query = """
+            INSERT INTO ov.or_podanie_issues(bulletin_issue_id, raw_issue_id, br_mark, br_court_code, br_court_name, kind_code, kind_name,
+								 cin, registration_date, corporate_body_name, 
+								 br_section, br_insertion, text, address_line, street, postal_code, city, created_at, updated_at)
+            VALUES (%(bid)s, %(rid)s, '-', '-', %(bcn)s, '-', %(kn)s, %(cin)s, %(rd)s, %(cbn)s, %(bs)s, 
+            %(bi)s, '-', %(al)s, %(street)s, %(pc)s, %(city)s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            RETURNING id, br_court_name, kind_name, cin, registration_date, corporate_body_name, 
+								 br_section, br_insertion, street, postal_code, city;
+    """
+
+    br_court_name = body_json["br_court_name"]
+    kind_name = body_json["kind_name"]
+    cin = body_json["cin"]
+    registration_date = body_json["registration_date"]
+    corporate_body_name = body_json["corporate_body_name"]
+    br_section = body_json["br_section"]
+    br_insertion = body_json["br_insertion"]
+    street = body_json["street"]
+    postal_code = body_json["postal_code"]
+    city = body_json["city"]
+    address_line = street + ", " + postal_code + " " + city
+
+    variables = {"bid": id_bulletin, "rid": id_raw, "bcn": br_court_name, "kn": kind_name, "cin": cin,
+                 "rd": registration_date, "cbn": corporate_body_name, "bs": br_section, "bi": br_insertion,
+                 "al": address_line, "street": street, "pc": postal_code, "city": city}
+
+    with connection.cursor() as cursor:
+        cursor.execute(query, variables)
+        items = cursor_items_from_db(cursor)
+
+    items = dates_to_str(items, ["registration_date"])
+
+    result = {"response": items}
+
+    response = JsonResponse(result, safe=False, json_dumps_params={'ensure_ascii': False}, status=201)
+
+    return response
+
+
 def post_add_row(request):
     print("post")
 
-    string = "2021-03-12T11:06:48Z"
-    string = string.replace("Z", "+00:00")
+    request_body = request.body
 
-    date = datetime.fromisoformat(string)
-    print(date)
+    body_json = json.loads(request_body)
+    print(body_json)
+
+    # 1 = OK, 0 = missing, -1 = error
+    bool_br_court_name = string_validator(body_json, "br_court_name")
+    bool_kind_name = string_validator(body_json, "kind_name")
+    bool_cin = number_validator(body_json, "cin")
+    bool_registration_date = date_validator_post(body_json, "registration_date")
+    bool_corporate_body_name = string_validator(body_json, "corporate_body_name")
+    bool_br_section = string_validator(body_json, "br_section")
+    bool_br_insertion = string_validator(body_json, "br_insertion")
+    bool_street = string_validator(body_json, "street")
+    bool_postal_code = string_validator(body_json, "postal_code")
+    bool_city = string_validator(body_json, "city")
+
+    list_bools = [bool_br_court_name, bool_kind_name, bool_cin, bool_registration_date, bool_corporate_body_name,
+                  bool_br_section, bool_br_insertion, bool_street, bool_postal_code, bool_city]
+    list_names = ['br_court_name', 'kind_name', 'cin', 'registration_date', 'corporate_body_name', 'br_section',
+                  'br_insertion', 'street', 'postal_code', 'city']
+
+    bool_post_ok = True
+
+    for item in list_bools:
+        if item != 1:
+            bool_post_ok = False
+
+    if not bool_post_ok:
+        response = generate_error_response_post(list_bools, list_names)
+        return response
+
+    bulletin_id = insert_bulletin_post()
+    raw_id = insert_raw_post(bulletin_id)
+    response = insert_podanie(body_json, bulletin_id, raw_id)
+
+    print(bulletin_id)
+    print(raw_id)
+
+    return response
 
 
-    print(request.POST)
-    print(request.GET)
-    print(request.body)
-
-
-    return JsonResponse({"method": "POST"})
-
-
-def delete_row(request, id =-1):
+def delete_row(request, table_id=-1):
 
     query = """
             DELETE FROM ov.or_podanie_issues
             WHERE id = %(id)s
             RETURNING *;
             """
-    print(id)
-    variables = {"id": id}
+    print(table_id)
+    variables = {"id": table_id}
 
     with connection.cursor() as cursor:
         cursor.execute(query, variables)
@@ -277,8 +527,6 @@ def delete_row(request, id =-1):
         return JsonResponse({"error": {"message": "Záznam neexistuje"}}, status=404)
     else:
         return HttpResponse(status=204)
-
-
 
 
 def debug(request):
@@ -354,5 +602,33 @@ def debug(request):
 # FROM ov.or_podanie_issues
 # WHERE corporate_body_name ~*  'orange Slovensko';
 
-
+# INSERT INTO ov.bulletin_issues(year, number, published_at, created_at, updated_at)
+# VALUES (2021, 25, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+# RETURNING id;
+#
+# SELECT year, number
+# FROM ov.bulletin_issues
+# ORDER BY id DESC
+# LIMIT 1;
+#
+# INSERT INTO ov.raw_issues(bulletin_issue_id, file_name, content, created_at, updated_at)
+# VALUES (2595, '-', '-', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+# RETURNING *;
+#
+# INSERT INTO ov.or_podanie_issues(bulletin_issue_id, raw_issue_id, br_mark, br_court_code, br_court_name, kind_code, kind_name,
+# 								 cin, registration_date, corporate_body_name,
+# 								 br_section, br_insertion, text, address_line, street, postal_code, city, created_at, updated_at)
+# VALUES (2595, 2457253, '-', '-', 'Bratislava', '-', 'kn', '000', '2021-03-13', 'cpn', 'brs', 'bri', '-', 'Street, 91322 City', 'Street', '91322', 'City', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+# RETURNING id, br_court_name, kind_name, cin, registration_date, corporate_body_name,
+# 								 br_section, br_insertion, street, postal_code, city;
+#
+# SELECT CURRENT_TIMESTAMP;
+#
+#
+# SELECT *
+# FROM ov.bulletin_issues;
+#
+# SELECT *
+# FROM ov.raw_issues
+# LIMIT 100;
 
