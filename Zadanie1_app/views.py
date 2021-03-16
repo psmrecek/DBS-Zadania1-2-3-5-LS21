@@ -1,18 +1,7 @@
-import psycopg2
-from django.http import HttpResponse
 from django.http import JsonResponse
 from django.db import connection
 
-import datetime
-import os
-
 # Create your views here.
-
-
-def current_datetime(request):
-    now = datetime.datetime.now()
-    html = "<html><body>It is now %s.</body></html>" % now
-    return HttpResponse(html)
 
 
 def health(request):
@@ -36,7 +25,3 @@ def welcome(request):
 
     return response
 
-
-def error(request):
-
-    print("Toto zamerne vyhodi chybu")

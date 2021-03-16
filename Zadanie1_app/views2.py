@@ -14,10 +14,6 @@ def url_dispatcher(request):
 
     method = request.method
 
-    print(request.path)
-    print(request.scheme)
-    print(method)
-    print('-' * 20)
     response = HttpResponse("")
 
     if method == 'GET':
@@ -28,19 +24,6 @@ def url_dispatcher(request):
         response = delete_row(request)
 
     return response
-
-
-def OLD_cursor_items_from_db(query, vars=None):
-
-    with connection.cursor() as cursor:
-        cursor.execute(query, vars)
-        columns = [col[0] for col in cursor.description]
-        items = [
-            dict(zip(columns, row))
-            for row in cursor.fetchall()
-        ]
-
-        return items
 
 
 def cursor_items_from_db(cursor):
@@ -61,10 +44,6 @@ def dates_to_str(items, date_column_names):
             items[i][column] = str(items[i][column])
 
     return items
-
-
-def printv(name, variable):
-    print(name, type(variable), variable)
 
 
 def generate_query_get(bool_search_string, bool_search_number, order_by, order_type, bool_registration_date_gte, bool_registration_date_lte):
@@ -145,6 +124,7 @@ def generate_query_metadata(bool_search_string, bool_search_number, bool_registr
 
     return query
 
+
 def generate_variables_get(limit, offset, bool_search_string, search, bool_search_number, search_int,
                            bool_registration_date_gte, reg_gte, bool_registration_date_lte, reg_lte):
 
@@ -181,28 +161,6 @@ def generate_metadata(page, per_page, variables, bool_search_string, bool_search
     return {"page": page, "per_page": per_page, "pages": pages, "total": all_items}
 
 
-def first5(request):
-
-    query = """ 
-                SELECT id, br_court_name, kind_name, cin, 
-                registration_date, corporate_body_name, br_section, 
-                br_insertion, text, street, postal_code, city 
-                FROM ov.or_podanie_issues ORDER BY id ASC LIMIT 5;
-            """
-
-    items = OLD_cursor_items_from_db(query)
-
-    items = dates_to_str(items, ["registration_date"])
-
-    metadata = generate_metadata(0, 0, 0, 0)
-
-    result = {"items": items, "metadata": metadata}
-
-    response = JsonResponse(result, safe=False, json_dumps_params={'ensure_ascii': False})
-
-    return response
-
-
 def date_validator(date_string):
 
     try:
@@ -218,7 +176,6 @@ def date_validator(date_string):
 def get_print_pages(request):
 
     allParameters = request.GET
-    print(allParameters)
 
     page = allParameters.get('page', '1')
     try:
@@ -248,13 +205,9 @@ def get_print_pages(request):
 
     registration_date_gte = allParameters.get("registration_date_gte")
     bool_registration_date_gte = date_validator(registration_date_gte)
-    print(bool_registration_date_gte)
-    printv("registration_date_gte", registration_date_gte)
 
     registration_date_lte = allParameters.get("registration_date_lte")
     bool_registration_date_lte = date_validator(registration_date_lte)
-    print(bool_registration_date_lte)
-    printv("registration_date_lte", registration_date_lte)
 
     collumn_names = ["id", "br_court_name", "kind_name", "cin", "registration_date", "corporate_body_name", "br_section",
                 "br_insertion", "text", "street", "postal_code", "city"]
@@ -264,24 +217,19 @@ def get_print_pages(request):
     order_by = order_by.lower()
     if order_by not in collumn_names:
         order_by = "id"
-    printv("order_by", order_by)
 
     default_order_type = "desc"
     order_type = allParameters.get("order_type", default_order_type)
     order_type = order_type.lower()
     if order_type not in possible_order_types:
         order_type = default_order_type
-    printv("order_type", order_type)
-
 
     page_offset = (page_int - 1) * per_page_int
 
     query = generate_query_get(bool_search_string, bool_search_number, order_by, order_type, bool_registration_date_gte, bool_registration_date_lte)
-    print(query)
 
     variables = generate_variables_get(per_page_int, page_offset, bool_search_string, search, bool_search_number, search_int,
                                        bool_registration_date_gte, registration_date_gte, bool_registration_date_lte, registration_date_lte)
-    print(variables)
 
     with connection.cursor() as cursor:
         cursor.execute(query, variables)
@@ -300,7 +248,6 @@ def get_print_pages(request):
 
 
 def string_validator(body_json, key):
-    string = ""
 
     try:
         value = body_json[key]
@@ -388,17 +335,13 @@ def insert_bulletin_post():
     if items[0][1] != current_year:
         insert_number = 1
 
-    # last_published_at = items[0][3]
-    # last_id = items[0][0]
-    # if last_published_at.year == now.year and last_published_at.month == now.month and last_published_at.day == now.day:
-    #     return last_id
-
     query_insert = """
                     INSERT INTO ov.bulletin_issues(year, number, published_at, created_at, updated_at)
                     VALUES (%(year)s, %(number)s, CURRENT_DATE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
                     RETURNING id;
     """
-    variables = variables = {"year": insert_year, "number": insert_number}
+
+    variables = {"year": insert_year, "number": insert_number}
 
     with connection.cursor() as cursor:
         cursor.execute(query_insert, variables)
@@ -430,7 +373,7 @@ def insert_podanie(body_json, id_bulletin, id_raw):
 								 cin, registration_date, corporate_body_name, 
 								 br_section, br_insertion, text, address_line, street, postal_code, city, created_at, updated_at)
             VALUES (%(bid)s, %(rid)s, '-', '-', %(bcn)s, '-', %(kn)s, %(cin)s, %(rd)s, %(cbn)s, %(bs)s, 
-            %(bi)s, '-', %(al)s, %(street)s, %(pc)s, %(city)s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            %(bi)s, %(text)s, %(al)s, %(street)s, %(pc)s, %(city)s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
             RETURNING id, br_court_name, kind_name, cin, registration_date, corporate_body_name, 
 								 br_section, br_insertion, street, postal_code, city;
     """
@@ -442,6 +385,7 @@ def insert_podanie(body_json, id_bulletin, id_raw):
     corporate_body_name = body_json["corporate_body_name"]
     br_section = body_json["br_section"]
     br_insertion = body_json["br_insertion"]
+    text = body_json["text"]
     street = body_json["street"]
     postal_code = body_json["postal_code"]
     city = body_json["city"]
@@ -449,7 +393,7 @@ def insert_podanie(body_json, id_bulletin, id_raw):
 
     variables = {"bid": id_bulletin, "rid": id_raw, "bcn": br_court_name, "kn": kind_name, "cin": cin,
                  "rd": registration_date, "cbn": corporate_body_name, "bs": br_section, "bi": br_insertion,
-                 "al": address_line, "street": street, "pc": postal_code, "city": city}
+                 "text": text, "al": address_line, "street": street, "pc": postal_code, "city": city}
 
     with connection.cursor() as cursor:
         cursor.execute(query, variables)
@@ -465,12 +409,10 @@ def insert_podanie(body_json, id_bulletin, id_raw):
 
 
 def post_add_row(request):
-    print("post")
 
     request_body = request.body
 
     body_json = json.loads(request_body)
-    print(body_json)
 
     # 1 = OK, 0 = missing, -1 = error
     bool_br_court_name = string_validator(body_json, "br_court_name")
@@ -480,14 +422,15 @@ def post_add_row(request):
     bool_corporate_body_name = string_validator(body_json, "corporate_body_name")
     bool_br_section = string_validator(body_json, "br_section")
     bool_br_insertion = string_validator(body_json, "br_insertion")
+    bool_text = string_validator(body_json, "text")
     bool_street = string_validator(body_json, "street")
     bool_postal_code = string_validator(body_json, "postal_code")
     bool_city = string_validator(body_json, "city")
 
     list_bools = [bool_br_court_name, bool_kind_name, bool_cin, bool_registration_date, bool_corporate_body_name,
-                  bool_br_section, bool_br_insertion, bool_street, bool_postal_code, bool_city]
+                  bool_br_section, bool_br_insertion, bool_text, bool_street, bool_postal_code, bool_city]
     list_names = ['br_court_name', 'kind_name', 'cin', 'registration_date', 'corporate_body_name', 'br_section',
-                  'br_insertion', 'street', 'postal_code', 'city']
+                  'br_insertion', 'text', 'street', 'postal_code', 'city']
 
     bool_post_ok = True
 
@@ -503,20 +446,19 @@ def post_add_row(request):
     raw_id = insert_raw_post(bulletin_id)
     response = insert_podanie(body_json, bulletin_id, raw_id)
 
-    print(bulletin_id)
-    print(raw_id)
-
     return response
 
 
 def delete_row(request, table_id=-1):
+
+    print("teraz")
 
     query = """
             DELETE FROM ov.or_podanie_issues
             WHERE id = %(id)s
             RETURNING *;
             """
-    print(table_id)
+
     variables = {"id": table_id}
 
     with connection.cursor() as cursor:
@@ -524,111 +466,6 @@ def delete_row(request, table_id=-1):
         items = cursor.fetchall()
 
     if len(items) == 0:
-        return JsonResponse({"error": {"message": "Záznam neexistuje"}}, status=404)
+        return JsonResponse({"error": {"message": "Záznam neexistuje"}}, status=404, json_dumps_params={'ensure_ascii': False})
     else:
         return HttpResponse(status=204)
-
-
-def debug(request):
-    num1, num2 = 10, 0
-
-    # query = """
-    #             SELECT id, br_court_name, kind_name, cin, registration_date, corporate_body_name, br_section,
-    #                     br_insertion, text, street, postal_code, city
-    #             FROM ov.or_podanie_issues
-    #             ORDER BY id ASC
-    #             LIMIT %(limit)s
-    #             OFFSET %(offset)s;
-    #         """ % {"limit": num1, "offset": num2}
-    #
-    # print(query)
-
-    with connection.cursor() as cursor:
-
-        # cursor.execute(
-        #     """
-        #     SELECT id, br_court_name, kind_name, cin, registration_date, corporate_body_name, br_section,
-        #         br_insertion, text, street, postal_code, city
-        #     FROM ov.or_podanie_issues
-        #     ORDER BY id ASC
-        #     LIMIT %(limit)s
-        #     OFFSET %(offset)s;
-        #     """, {
-        #     "limit": num1,
-        #     "offset": num2,
-        #     })
-
-        # index = "'; select true; --"
-        index = "Advertising Services s. r. o."
-
-        cursor.execute(
-            """ 
-            SELECT id, corporate_body_name
-            FROM ov.or_podanie_issues 
-            
-            WHERE corporate_body_name = %(index)s 
-
-            """, {
-            "index": index,
-            })
-
-
-        items = cursor.fetchone()
-        print(items)
-
-        response = True
-        if items is None:
-            # User does not exist
-            response = False
-
-    return JsonResponse({"debug": response})
-
-# SELECT id, br_court_name, kind_name, cin,
-# registration_date, corporate_body_name, br_section,
-# br_insertion, text, street, postal_code, city
-# FROM ov.or_podanie_issues
-# --WHERE corporate_body_name LIKE 'Orange Slovensko'
-# ORDER BY id ASC
-# LIMIT 10
-# OFFSET 1;
-#
-# --CREATE INDEX ON ov.or_podanie_issues(corporate_body_name);
-#
-# SELECT *
-# FROM ov.or_podanie_issues
-# WHERE corporate_body_name ILIKE '%orange Slovensko%';
-#
-# SELECT corporate_body_name, registration_date
-# FROM ov.or_podanie_issues
-# WHERE corporate_body_name ~*  'orange Slovensko';
-
-# INSERT INTO ov.bulletin_issues(year, number, published_at, created_at, updated_at)
-# VALUES (2021, 25, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-# RETURNING id;
-#
-# SELECT year, number
-# FROM ov.bulletin_issues
-# ORDER BY id DESC
-# LIMIT 1;
-#
-# INSERT INTO ov.raw_issues(bulletin_issue_id, file_name, content, created_at, updated_at)
-# VALUES (2595, '-', '-', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-# RETURNING *;
-#
-# INSERT INTO ov.or_podanie_issues(bulletin_issue_id, raw_issue_id, br_mark, br_court_code, br_court_name, kind_code, kind_name,
-# 								 cin, registration_date, corporate_body_name,
-# 								 br_section, br_insertion, text, address_line, street, postal_code, city, created_at, updated_at)
-# VALUES (2595, 2457253, '-', '-', 'Bratislava', '-', 'kn', '000', '2021-03-13', 'cpn', 'brs', 'bri', '-', 'Street, 91322 City', 'Street', '91322', 'City', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-# RETURNING id, br_court_name, kind_name, cin, registration_date, corporate_body_name,
-# 								 br_section, br_insertion, street, postal_code, city;
-#
-# SELECT CURRENT_TIMESTAMP;
-#
-#
-# SELECT *
-# FROM ov.bulletin_issues;
-#
-# SELECT *
-# FROM ov.raw_issues
-# LIMIT 100;
-
