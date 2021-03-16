@@ -116,11 +116,7 @@ def generate_query_metadata(bool_search_string, bool_search_number, bool_registr
         else:
             where += "registration_date <= %(reg_lte)s" + "\n"
 
-    end = """LIMIT %(limit)s
-            OFFSET %(offset)s; 
-        """
-
-    query = start + where + end
+    query = start + where
 
     return query
 
@@ -153,8 +149,10 @@ def generate_metadata(page, per_page, variables, bool_search_string, bool_search
         cursor.execute(query, variables)
         items = cursor.fetchall()
 
-
-    all_items = items[0][0]
+    try:
+        all_items = items[0][0]
+    except:
+        all_items = 0
 
     pages = math.ceil(all_items / per_page)
 
@@ -375,7 +373,7 @@ def insert_podanie(body_json, id_bulletin, id_raw):
             VALUES (%(bid)s, %(rid)s, '-', '-', %(bcn)s, '-', %(kn)s, %(cin)s, %(rd)s, %(cbn)s, %(bs)s, 
             %(bi)s, %(text)s, %(al)s, %(street)s, %(pc)s, %(city)s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
             RETURNING id, br_court_name, kind_name, cin, registration_date, corporate_body_name, 
-								 br_section, br_insertion, street, postal_code, city;
+								 br_section, br_insertion, text, street, postal_code, city;
     """
 
     br_court_name = body_json["br_court_name"]
@@ -450,8 +448,6 @@ def post_add_row(request):
 
 
 def delete_row(request, table_id=-1):
-
-    print("teraz")
 
     query = """
             DELETE FROM ov.or_podanie_issues
