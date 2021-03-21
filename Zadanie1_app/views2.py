@@ -457,12 +457,12 @@ def delete_row(request, table_id=-1):
 
     query_bulletin = """
             DELETE FROM ov.bulletin_issues
-            WHERE id = %(id)s
+            WHERE id = %(id)s;
             """
 
     query_raw = """
             DELETE FROM ov.raw_issues
-            WHERE id = %(id)s
+            WHERE id = %(id)s;
             """
 
     variables = {"id": table_id}
