@@ -449,17 +449,42 @@ def post_add_row(request):
 
 def delete_row(request, table_id=-1):
 
-    query = """
+    query_podanie = """
             DELETE FROM ov.or_podanie_issues
             WHERE id = %(id)s
             RETURNING *;
             """
 
+    query_bulletin = """
+            DELETE FROM ov.bulletin_issues
+            WHERE id = %(id)s
+            """
+
+    query_raw = """
+            DELETE FROM ov.raw_issues
+            WHERE id = %(id)s
+            """
+
     variables = {"id": table_id}
 
     with connection.cursor() as cursor:
-        cursor.execute(query, variables)
+        cursor.execute(query_podanie, variables)
         items = cursor.fetchall()
+
+    if len(items) > 0:
+        try:
+            bulletin_id = items[0][1]
+            raw_id = items[0][2]
+        except:
+            pass
+
+        variables_raw = {"id": raw_id}
+        with connection.cursor() as cursor:
+            cursor.execute(query_raw, variables_raw)
+
+        variables_bulletin = {"id": bulletin_id}
+        with connection.cursor() as cursor:
+            cursor.execute(query_bulletin, variables_bulletin)
 
     if len(items) == 0:
         return JsonResponse({"error": {"message": "Záznam neexistuje"}}, status=404, json_dumps_params={'ensure_ascii': False})

@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="0bc5924e-fc83-480c-8aa9-d5858ffbb32a" name="Default Changelist" comment="Pridany jednoduchy delete.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Zadanie1_app/views2.py" beforeDir="false" afterPath="$PROJECT_DIR$/Zadanie1_app/views2.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -92,7 +91,8 @@
       <workItem from="1615564003621" duration="1092000" />
       <workItem from="1615626217181" duration="11355000" />
       <workItem from="1615835496722" duration="9000" />
-      <workItem from="1615898754469" duration="4071000" />
+      <workItem from="1615898754469" duration="4366000" />
+      <workItem from="1616315716939" duration="1354000" />
     </task>
     <task id="LOCAL-00001" summary="Vyriesene 1. zadanie.">
       <created>1614331245415</created>
@@ -129,7 +129,14 @@
       <option name="project" value="LOCAL" />
       <updated>1615909508157</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Upravene readme. Opravene drobne bugy pri metadatach.">
+      <created>1615911260777</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1615911260777</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -153,6 +160,7 @@
     <MESSAGE value="Pridany jednoduchy delete." />
     <MESSAGE value="Mozno vyriesene zadanie 2. Spinava verzia." />
     <MESSAGE value="Vyriesene zadanie 2. Cista verzia." />
-    <option name="LAST_COMMIT_MESSAGE" value="Vyriesene zadanie 2. Cista verzia." />
+    <MESSAGE value="Upravene readme. Opravene drobne bugy pri metadatach." />
+    <option name="LAST_COMMIT_MESSAGE" value="Upravene readme. Opravene drobne bugy pri metadatach." />
   </component>
 </project>
