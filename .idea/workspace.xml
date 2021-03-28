@@ -2,7 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0bc5924e-fc83-480c-8aa9-d5858ffbb32a" name="Default Changelist" comment="Pridany jednoduchy delete.">
-      <change beforePath="$PROJECT_DIR$/Zadanie1_app/views2.py" beforeDir="false" afterPath="$PROJECT_DIR$/Zadanie1_app/views2.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Zadanie1_app/migrations/0001_initial.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Zadanie1_app/views3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DBS_Zadanie1/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/DBS_Zadanie1/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Zadanie1_app/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/Zadanie1_app/urls.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -91,7 +95,13 @@
       <workItem from="1615626217181" duration="11355000" />
       <workItem from="1615835496722" duration="9000" />
       <workItem from="1615898754469" duration="4366000" />
-      <workItem from="1616315716939" duration="1647000" />
+      <workItem from="1616315716939" duration="2171000" />
+      <workItem from="1616404986488" duration="2323000" />
+      <workItem from="1616626344108" duration="85000" />
+      <workItem from="1616753798628" duration="2752000" />
+      <workItem from="1616864073188" duration="32000" />
+      <workItem from="1616864115059" duration="956000" />
+      <workItem from="1616940130622" duration="7276000" />
     </task>
     <task id="LOCAL-00001" summary="Vyriesene 1. zadanie.">
       <created>1614331245415</created>
@@ -142,7 +152,14 @@
       <option name="project" value="LOCAL" />
       <updated>1616317328048</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Drobna uprava delete v zadani 2.">
+      <created>1616317464465</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1616317464465</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -168,6 +185,7 @@
     <MESSAGE value="Vyriesene zadanie 2. Cista verzia." />
     <MESSAGE value="Upravene readme. Opravene drobne bugy pri metadatach." />
     <MESSAGE value="Drobna uprrava delete v zadani 2." />
-    <option name="LAST_COMMIT_MESSAGE" value="Drobna uprrava delete v zadani 2." />
+    <MESSAGE value="Drobna uprava delete v zadani 2." />
+    <option name="LAST_COMMIT_MESSAGE" value="Drobna uprava delete v zadani 2." />
   </component>
 </project>

@@ -84,27 +84,51 @@ WSGI_APPLICATION = 'DBS_Zadanie1.wsgi.application'
 #     }
 # }
 
-if DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'dbs2021',
-            'USER': 'postgres',
-            'PASSWORD': '1234',
-            'HOST': '127.0.0.1',
-            'PORT': '5432',
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'dbs2021',
+        'USER': 'postgres',
+        'PASSWORD': '1234',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ['DBNAME'],
-            'USER': os.environ['DBUSER'] ,
-            'PASSWORD': os.environ['DBPASS'],
-            'HOST': os.environ['DBHOST'],
-        }
-    }
+}
+
+### OPRAVIT!!!
+# if DEBUG:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql',
+#             'NAME': 'dbs2021',
+#             'USER': 'postgres',
+#             'PASSWORD': '1234',
+#             'HOST': '127.0.0.1',
+#             'PORT': '5432',
+#         }
+#     }
+# else:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql',
+#             'NAME': os.environ['DBNAME'],
+#             'USER': os.environ['DBUSER'] ,
+#             'PASSWORD': os.environ['DBPASS'],
+#             'HOST': os.environ['DBHOST'],
+# #            'PORT': os.environ['DBPORT'],
+#         }
+#     }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'slovensko',
+#         'USER': 'tester',
+#         'PASSWORD': 'YRgYxeD4UVGp',
+#         'HOST': '147.175.150.216',
+#         'PORT': '5432',
+#     }
+# }
 
 
 # Password validation
