@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0bc5924e-fc83-480c-8aa9-d5858ffbb32a" name="Default Changelist" comment="Pridany jednoduchy delete.">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Zadanie1_app/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/Zadanie1_app/urls.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -101,7 +100,7 @@
       <workItem from="1616940130622" duration="7276000" />
       <workItem from="1616953499437" duration="233000" />
       <workItem from="1616955819217" duration="374000" />
-      <workItem from="1616957308635" duration="1152000" />
+      <workItem from="1616957308635" duration="1318000" />
     </task>
     <task id="LOCAL-00001" summary="Vyriesene 1. zadanie.">
       <created>1614331245415</created>
@@ -166,7 +165,14 @@
       <option name="project" value="LOCAL" />
       <updated>1616953573676</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Pridana url s lomitkom">
+      <created>1616958481233</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1616958481233</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -194,6 +200,7 @@
     <MESSAGE value="Drobna uprrava delete v zadani 2." />
     <MESSAGE value="Drobna uprava delete v zadani 2." />
     <MESSAGE value="Zadanie 3 - Vypracované migrácie a endpoint. Otestované so vzorovými vstupmi. Br_section mám NULL miesto prázdneho stringu." />
-    <option name="LAST_COMMIT_MESSAGE" value="Zadanie 3 - Vypracované migrácie a endpoint. Otestované so vzorovými vstupmi. Br_section mám NULL miesto prázdneho stringu." />
+    <MESSAGE value="Pridana url s lomitkom" />
+    <option name="LAST_COMMIT_MESSAGE" value="Pridana url s lomitkom" />
   </component>
 </project>
