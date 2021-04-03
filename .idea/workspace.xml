@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0bc5924e-fc83-480c-8aa9-d5858ffbb32a" name="Default Changelist" comment="Pridany jednoduchy delete.">
-      <change beforePath="$PROJECT_DIR$/Zadanie1_app/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/Zadanie1_app/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DBS_Zadanie1/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/DBS_Zadanie1/settings.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -100,7 +101,14 @@
       <workItem from="1616940130622" duration="7276000" />
       <workItem from="1616953499437" duration="233000" />
       <workItem from="1616955819217" duration="374000" />
-      <workItem from="1616957308635" duration="1318000" />
+      <workItem from="1616957308635" duration="1397000" />
+      <workItem from="1617037868304" duration="3049000" />
+      <workItem from="1617041658561" duration="148000" />
+      <workItem from="1617041964663" duration="3225000" />
+      <workItem from="1617083441978" duration="819000" />
+      <workItem from="1617115714379" duration="1929000" />
+      <workItem from="1617184995360" duration="4388000" />
+      <workItem from="1617466331602" duration="3201000" />
     </task>
     <task id="LOCAL-00001" summary="Vyriesene 1. zadanie.">
       <created>1614331245415</created>
@@ -172,7 +180,14 @@
       <option name="project" value="LOCAL" />
       <updated>1616958481233</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Oprava chybneho refaktoru v urls.py">
+      <created>1616958659998</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1616958659998</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -201,6 +216,7 @@
     <MESSAGE value="Drobna uprava delete v zadani 2." />
     <MESSAGE value="Zadanie 3 - Vypracované migrácie a endpoint. Otestované so vzorovými vstupmi. Br_section mám NULL miesto prázdneho stringu." />
     <MESSAGE value="Pridana url s lomitkom" />
-    <option name="LAST_COMMIT_MESSAGE" value="Pridana url s lomitkom" />
+    <MESSAGE value="Oprava chybneho refaktoru v urls.py" />
+    <option name="LAST_COMMIT_MESSAGE" value="Oprava chybneho refaktoru v urls.py" />
   </component>
 </project>

@@ -77,6 +77,7 @@ WSGI_APPLICATION = 'DBS_Zadanie1.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+# Povodna Django
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.sqlite3',
@@ -84,41 +85,33 @@ WSGI_APPLICATION = 'DBS_Zadanie1.wsgi.application'
 #     }
 # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'dbs2021',
-        'USER': 'postgres',
-        'PASSWORD': '1234',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+## Automaticke rozhodovanie
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'dbs2021',
+            'USER': 'postgres',
+            'PASSWORD': '1234',
+            'HOST': '127.0.0.1',
+            'PORT': '5432',
+        }
     }
+
+
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ['DBNAME'],
+            'USER': os.environ['DBUSER'] ,
+            'PASSWORD': os.environ['DBPASS'],
+            'HOST': os.environ['DBHOST'],
+            'PORT': os.environ['DBPORT'],
+        }
 }
 
-### OPRAVIT!!!
-# if DEBUG:
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.postgresql',
-#             'NAME': 'dbs2021',
-#             'USER': 'postgres',
-#             'PASSWORD': '1234',
-#             'HOST': '127.0.0.1',
-#             'PORT': '5432',
-#         }
-#     }
-# else:
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.postgresql',
-#             'NAME': os.environ['DBNAME'],
-#             'USER': os.environ['DBUSER'] ,
-#             'PASSWORD': os.environ['DBPASS'],
-#             'HOST': os.environ['DBHOST'],
-# #            'PORT': os.environ['DBPORT'],
-#         }
-#     }
-
+# Skolska natvrdo
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
