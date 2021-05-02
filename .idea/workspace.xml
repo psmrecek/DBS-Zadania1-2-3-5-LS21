@@ -3,7 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="0bc5924e-fc83-480c-8aa9-d5858ffbb32a" name="Default Changelist" comment="Pridany jednoduchy delete.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DBS_Zadanie1/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/DBS_Zadanie1/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Zadanie1_app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/Zadanie1_app/models.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,6 +23,7 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
   </component>
   <component name="ProjectId" id="1ohVYvvPCskvErxkZenj9YH3zzN" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
