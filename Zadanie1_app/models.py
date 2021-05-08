@@ -9,7 +9,7 @@ from django.db import models
 
 
 class BulletinIssues(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     year = models.IntegerField()
     number = models.IntegerField()
     published_at = models.DateTimeField()
@@ -47,7 +47,7 @@ class DjangoMigrations(models.Model):
 
 
 class KonkurzRestrukturalizaciaActors(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     corporate_body_name = models.CharField(max_length=255, blank=True, null=True)
     cin = models.BigIntegerField(blank=True, null=True)
     street = models.CharField(max_length=255, blank=True, null=True)
@@ -65,7 +65,7 @@ class KonkurzRestrukturalizaciaActors(models.Model):
 
 
 class KonkurzRestrukturalizaciaIssues(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     bulletin_issue = models.ForeignKey(BulletinIssues, models.DO_NOTHING)
     raw_issue = models.OneToOneField('RawIssues', models.DO_NOTHING)
     court_name = models.CharField(max_length=255)
@@ -91,7 +91,7 @@ class KonkurzRestrukturalizaciaIssues(models.Model):
 
 
 class KonkurzRestrukturalizaciaProposings(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     issue = models.ForeignKey(KonkurzRestrukturalizaciaIssues, models.DO_NOTHING)
     actor = models.ForeignKey(KonkurzRestrukturalizaciaActors, models.DO_NOTHING)
     created_at = models.DateTimeField()
@@ -103,7 +103,7 @@ class KonkurzRestrukturalizaciaProposings(models.Model):
 
 
 class KonkurzVyrovnanieIssues(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     bulletin_issue = models.ForeignKey(BulletinIssues, models.DO_NOTHING)
     raw_issue = models.OneToOneField('RawIssues', models.DO_NOTHING)
     court_code = models.CharField(max_length=255)
@@ -130,7 +130,7 @@ class KonkurzVyrovnanieIssues(models.Model):
 
 
 class LikvidatorIssues(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     bulletin_issue = models.ForeignKey(BulletinIssues, models.DO_NOTHING)
     raw_issue = models.OneToOneField('RawIssues', models.DO_NOTHING)
     legal_form_code = models.CharField(max_length=255)
@@ -167,7 +167,7 @@ class LikvidatorIssues(models.Model):
 
 
 class OrPodanieIssueDocuments(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     or_podanie_issue = models.ForeignKey('OrPodanieIssues', models.DO_NOTHING)
     name = models.CharField(max_length=255)
     delivery_date = models.DateField()
@@ -181,7 +181,7 @@ class OrPodanieIssueDocuments(models.Model):
 
 
 class OrPodanieIssues(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     bulletin_issue = models.ForeignKey(BulletinIssues, models.DO_NOTHING)
     raw_issue = models.ForeignKey('RawIssues', models.DO_NOTHING)
     br_mark = models.CharField(max_length=255)
@@ -210,7 +210,7 @@ class OrPodanieIssues(models.Model):
 
 
 class RawIssues(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     bulletin_issue = models.ForeignKey(BulletinIssues, models.DO_NOTHING)
     file_name = models.CharField(max_length=255)
     content = models.TextField(blank=True, null=True)
@@ -224,7 +224,7 @@ class RawIssues(models.Model):
 
 
 class ZnizenieImaniaCeos(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     znizenie_imania_issue = models.ForeignKey('ZnizenieImaniaIssues', models.DO_NOTHING)
     prefixes = models.CharField(max_length=255, blank=True, null=True)
     postfixes = models.CharField(max_length=255, blank=True, null=True)
@@ -244,7 +244,7 @@ class ZnizenieImaniaCeos(models.Model):
 
 
 class ZnizenieImaniaIssues(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     bulletin_issue = models.ForeignKey(BulletinIssues, models.DO_NOTHING)
     raw_issue = models.OneToOneField(RawIssues, models.DO_NOTHING)
     corporate_body_name = models.CharField(max_length=255)

@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="0bc5924e-fc83-480c-8aa9-d5858ffbb32a" name="Default Changelist" comment="Vytvorena nova migracia a model">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Zadanie1_app/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/Zadanie1_app/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Zadanie1_app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/Zadanie1_app/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Zadanie1_app/views5.py" beforeDir="false" afterPath="$PROJECT_DIR$/Zadanie1_app/views5.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -115,7 +115,7 @@
       <workItem from="1617558853064" duration="1453000" />
       <workItem from="1617560958841" duration="326000" />
       <workItem from="1620209516460" duration="1848000" />
-      <workItem from="1620463517571" duration="14826000" />
+      <workItem from="1620463517571" duration="23721000" />
     </task>
     <task id="LOCAL-00001" summary="Vyriesene 1. zadanie.">
       <created>1614331245415</created>
@@ -208,7 +208,14 @@
       <option name="project" value="LOCAL" />
       <updated>1619977046941</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Vytvoreny get pre sub Z5">
+      <created>1620499027193</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1620499027193</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -240,6 +247,7 @@
     <MESSAGE value="Oprava chybneho refaktoru v urls.py" />
     <MESSAGE value="Úprava prihlasovacích údajov k databáze." />
     <MESSAGE value="Vytvorena nova migracia a model" />
-    <option name="LAST_COMMIT_MESSAGE" value="Vytvorena nova migracia a model" />
+    <MESSAGE value="Vytvoreny get pre sub Z5" />
+    <option name="LAST_COMMIT_MESSAGE" value="Vytvoreny get pre sub Z5" />
   </component>
 </project>

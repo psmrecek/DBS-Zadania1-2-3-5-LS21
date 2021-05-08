@@ -1,10 +1,14 @@
+import json
 import math
+from datetime import datetime
 
 from django.http import JsonResponse
 from django.http import HttpResponse
 from django.utils.dateparse import parse_datetime
 from django.db.models import Q
-from .views2 import cursor_items_from_db, dates_to_str, date_validator
+from django.utils.timezone import now as django_now
+from .views2 import number_validator, string_validator, generate_error_response_post
+from django.forms.models import model_to_dict
 from . import models
 
 
@@ -140,31 +144,188 @@ def submissions_get_pages(request):
     return response
 
 
+def submissions_get_one(request, table_id=-1):
+    print("teraz")
+    podanie = None
+    try:
+        podanie = models.OrPodanieIssues.objects.get(id=table_id)
+    except:
+        return JsonResponse({"error": {"message": "Záznam neexistuje"}}, status=404,
+                            json_dumps_params={'ensure_ascii': False})
+
+    full_model_dict = _submissions_remove_from_dict(podanie)
+
+    result = {"response": full_model_dict}
+
+    response = JsonResponse(result, safe=False, json_dumps_params={'ensure_ascii': False})
+
+    return response
+
+
+def _submissions_post_record_date_validator(body_json, key):
+    value = ""
+
+    try:
+        value = body_json[key]
+    except KeyError:
+        return 0
+
+    date_bool = True
+    date = None
+    try:
+        date = parse_datetime(value)
+    except:
+        date_bool = False
+
+    if date_bool and date is not None and (datetime.now().year == date.year):
+        return 1
+
+    return -1
+
+
+def _submissions_post_record_podanie(body_json, bulletin_id, raw_id):
+
+    br_court_name = body_json["br_court_name"]
+    kind_name = body_json["kind_name"]
+    cin = body_json["cin"]
+    registration_date = parse_datetime(body_json["registration_date"])
+    corporate_body_name = body_json["corporate_body_name"]
+    br_section = body_json["br_section"]
+    br_insertion = body_json["br_insertion"]
+    text = body_json["text"]
+    street = body_json["street"]
+    postal_code = body_json["postal_code"]
+    city = body_json["city"]
+    address_line = street + ", " + postal_code + " " + city
+
+    podanie = models.OrPodanieIssues(bulletin_issue_id=bulletin_id, raw_issue_id=raw_id, br_mark="-", br_court_code="-",
+                                       br_court_name=br_court_name, kind_code="-", kind_name=kind_name, cin=cin,
+                                       registration_date=registration_date, corporate_body_name=corporate_body_name,
+                                       br_section=br_section, br_insertion=br_insertion, text=text, address_line=address_line,
+                                       street=street, postal_code=postal_code, city=city, created_at=django_now(),
+                                       updated_at=django_now())
+    return podanie
+
+
+def _submissions_remove_from_dict(podanie):
+    full_model_dict = model_to_dict(podanie)
+    full_model_dict.pop("bulletin_issue", None)
+    full_model_dict.pop("raw_issue", None)
+    full_model_dict.pop("br_mark", None)
+    full_model_dict.pop("br_court_code", None)
+    full_model_dict.pop("kind_code", None)
+    full_model_dict.pop("br_insertion", None)
+    full_model_dict.pop("created_at", None)
+    full_model_dict.pop("updated_at", None)
+    full_model_dict.pop("address_line", None)
+    full_model_dict.pop("company", None)
+
+    return full_model_dict
+
+
 def submissions_post_record(request):
+    request_body = request.body
+
+    body_json = json.loads(request_body)
+
+    # 1 = OK, 0 = missing, -1 = error
+    bool_br_court_name = string_validator(body_json, "br_court_name")
+    bool_kind_name = string_validator(body_json, "kind_name")
+    bool_cin = number_validator(body_json, "cin")
+    bool_registration_date = _submissions_post_record_date_validator(body_json, "registration_date")
+    bool_corporate_body_name = string_validator(body_json, "corporate_body_name")
+    bool_br_section = string_validator(body_json, "br_section")
+    bool_br_insertion = string_validator(body_json, "br_insertion")
+    bool_text = string_validator(body_json, "text")
+    bool_street = string_validator(body_json, "street")
+    bool_postal_code = string_validator(body_json, "postal_code")
+    bool_city = string_validator(body_json, "city")
+
+    list_bools = [bool_br_court_name, bool_kind_name, bool_cin, bool_registration_date, bool_corporate_body_name,
+                  bool_br_section, bool_br_insertion, bool_text, bool_street, bool_postal_code, bool_city]
+    list_names = ['br_court_name', 'kind_name', 'cin', 'registration_date', 'corporate_body_name', 'br_section',
+                  'br_insertion', 'text', 'street', 'postal_code', 'city']
+
+    bool_post_ok = True
+
+    for item in list_bools:
+        if item != 1:
+            bool_post_ok = False
+
+    if not bool_post_ok:
+        response = generate_error_response_post(list_bools, list_names)
+        return response
+
+    current_year = datetime.now().year
+    last_bulletin = models.BulletinIssues.objects.order_by('-id')[0]
+    insert_year = current_year
+    insert_number = last_bulletin.number + 1
+    if last_bulletin.year != current_year:
+        insert_number = 1
+
+    now = django_now()
+
+    bulletin = models.BulletinIssues(year=insert_year, number=insert_number, published_at=now, created_at=now, updated_at=now)
+    bulletin.save()
+    bulletin_id = bulletin.pk
+
+    raw = models.RawIssues(bulletin_issue_id=bulletin_id, file_name="-", content="-", created_at=now, updated_at=now)
+    raw.save()
+    raw_id = raw.pk
+
+    podanie = _submissions_post_record_podanie(body_json, bulletin_id, raw_id)
+    podanie.save()
+
+    full_model_dict = _submissions_remove_from_dict(podanie)
+
+    result = {"response": full_model_dict}
+
+    response = JsonResponse(result, safe=False, json_dumps_params={'ensure_ascii': False}, status=201)
+
+    return response
+
+
+def submissions_put_record(request, table_id=-1):
     pass
 
 
-def submissions_put_record(request):
-    pass
+def submissions_delete_record(request, table_id=-1):
+    podanie = None
+    try:
+        podanie = models.OrPodanieIssues.objects.get(id=table_id)
+    except:
+        return JsonResponse({"error": {"message": "Záznam neexistuje"}}, status=404,
+                            json_dumps_params={'ensure_ascii': False})
+
+    bulletin_id = podanie.bulletin_issue.pk
+    raw_id = podanie.raw_issue.pk
+
+    podanie.delete()
+    raw = models.RawIssues.objects.get(id=raw_id)
+    raw.delete()
+    bulletin = models.BulletinIssues.objects.get(id=bulletin_id)
+    bulletin.delete()
 
 
-def submissions_delete_record(request):
-    pass
+    return HttpResponse(status=204)
 
 
-def submissions_url_dispatcher(request):
+def submissions_url_dispatcher(request, table_id=None):
 
     method = request.method
 
     response = HttpResponse("")
 
     if method == 'GET':
-        response = submissions_get_pages(request)
+        if table_id is None:
+            response = submissions_get_pages(request)
+        else:
+            response = submissions_get_one(request, table_id)
     elif method == 'POST':
         response = submissions_post_record(request)
     elif method == 'PUT':
-        response = submissions_put_record(request)
+        response = submissions_put_record(request, table_id)
     elif method == 'DELETE':
-        response = submissions_delete_record(request)
+        response = submissions_delete_record(request, table_id)
 
     return response
