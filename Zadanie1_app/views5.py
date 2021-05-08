@@ -285,8 +285,101 @@ def submissions_post_record(request):
     return response
 
 
+def _submissions_put_record_error_response(list_bools, list_names):
+    text = []
+
+    for i in range(len(list_bools)):
+        if list_bools[i] == -1:
+            if list_names[i] == "registration_date":
+                error = {"field": list_names[i], "reasons": ["invalid_range"]}
+                text.append(error)
+                continue
+
+            if list_names[i] == "cin":
+                error = {"field": list_names[i], "reasons": ["not_number"]}
+                text.append(error)
+                continue
+
+            error = {"field": list_names[i], "reasons": ["not_string"]}
+            text.append(error)
+
+    response = JsonResponse({"errors": text}, status=422, safe=False)
+    return response
+
+
+def _submissions_put_record_string_validator(body_json, key):
+
+    try:
+        value = body_json[key]
+    except KeyError:
+        return 0
+
+    if not isinstance(value, str):
+        return -1
+
+    try:
+        if len(value) == 0:
+            return 0
+    except:
+        return 0
+
+    return 1
+
+
 def submissions_put_record(request, table_id=-1):
-    pass
+    podanie = None
+    try:
+        podanie = models.OrPodanieIssues.objects.get(id=table_id)
+    except:
+        return JsonResponse({"error": {"message": "Záznam neexistuje"}}, status=404,
+                            json_dumps_params={'ensure_ascii': False})
+
+    request_body = request.body
+
+    body_json = json.loads(request_body)
+
+    # 1 = OK, 0 = missing, -1 = error
+    bool_br_court_name = _submissions_put_record_string_validator(body_json, "br_court_name")
+    bool_kind_name = _submissions_put_record_string_validator(body_json, "kind_name")
+    bool_cin = number_validator(body_json, "cin")
+    bool_registration_date = _submissions_post_record_date_validator(body_json, "registration_date")
+    bool_corporate_body_name = _submissions_put_record_string_validator(body_json, "corporate_body_name")
+    bool_br_section = _submissions_put_record_string_validator(body_json, "br_section")
+    bool_br_insertion = _submissions_put_record_string_validator(body_json, "br_insertion")
+    bool_text = _submissions_put_record_string_validator(body_json, "text")
+    bool_street = _submissions_put_record_string_validator(body_json, "street")
+    bool_postal_code = _submissions_put_record_string_validator(body_json, "postal_code")
+    bool_city = _submissions_put_record_string_validator(body_json, "city")
+
+    list_bools = [bool_br_court_name, bool_kind_name, bool_cin, bool_registration_date, bool_corporate_body_name,
+                  bool_br_section, bool_br_insertion, bool_text, bool_street, bool_postal_code, bool_city]
+    list_names = ['br_court_name', 'kind_name', 'cin', 'registration_date', 'corporate_body_name', 'br_section',
+                  'br_insertion', 'text', 'street', 'postal_code', 'city']
+
+    bool_post_ok = True
+
+    for item in list_bools:
+        if item == -1:
+            bool_post_ok = False
+
+    if not bool_post_ok:
+        response = _submissions_put_record_error_response(list_bools, list_names)
+        return response
+
+    for i in range(len(list_bools)):
+        if list_bools[i]:
+            podanie.__dict__[list_names[i]] = body_json[list_names[i]]
+    podanie.updated_at = django_now()
+    podanie.save()
+
+    full_model_dict = _submissions_remove_from_dict(podanie)
+
+    result = {"response": full_model_dict}
+
+    response = JsonResponse(result, safe=False, json_dumps_params={'ensure_ascii': False}, status=201)
+
+    return response
+
 
 
 def submissions_delete_record(request, table_id=-1):
