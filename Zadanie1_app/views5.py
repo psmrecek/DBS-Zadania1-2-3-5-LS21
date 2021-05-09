@@ -377,8 +377,10 @@ def submissions_put_record(request, table_id=-1):
         return response
 
     for i in range(len(list_bools)):
-        if list_bools[i]:
+        if list_bools[i] and list_names[i]!='registration_date':
             podanie.__dict__[list_names[i]] = body_json[list_names[i]]
+        else:
+            podanie.__dict__[list_names[i]] = parse_datetime(body_json[list_names[i]])
     podanie.updated_at = django_now()
     podanie.save()
 
