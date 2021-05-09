@@ -24,8 +24,8 @@ urlpatterns = [
     path('v2/ov/submissions/<int:table_id>', views5.submissions_url_dispatcher, name="submissions"),
     path('v2/ov/submissions/<int:table_id>/', views5.submissions_url_dispatcher, name="submissions"),
 
-    # path('v2/companies/', views5.z5_get_print_pages, name="Zadanie_3_GET"),
-    # path('v2/companies', views5.z5_get_print_pages, name="Zadanie_3_GET"),
+    path('v2/companies/', views5.companies_get_pages, name="companies"),
+    path('v2/companies', views5.companies_get_pages, name="companies"),
 
 ]
 

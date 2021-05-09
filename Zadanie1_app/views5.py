@@ -5,7 +5,7 @@ from datetime import datetime
 from django.http import JsonResponse
 from django.http import HttpResponse
 from django.utils.dateparse import parse_datetime
-from django.db.models import Q
+from django.db.models import Q, F, Count
 from django.utils.timezone import now as django_now
 from .views2 import number_validator, string_validator, generate_error_response_post
 from django.forms.models import model_to_dict
@@ -48,6 +48,9 @@ def _submissions_get_generate_filter(search_string_bool, search_string, search_n
         date_filter = (Q(registration_date__gte=reg_date_gte_convert))
     elif reg_date_lte_bool:
         date_filter = (Q(registration_date__lte=reg_date_lte_convert))
+
+    if search_filter is None and date_filter is None:
+        return ~Q(pk=None)
 
     if search_filter is None:
         return date_filter
@@ -119,8 +122,8 @@ def submissions_get_pages(request):
     if order_type not in possible_order_types:
         order_type = default_order_type
 
-    if order_type == 'desc':
-        order_by = '-' + order_by
+    # if order_type == 'desc':
+    #     order_by = '-' + order_by
 
     page_offset = (page_int - 1) * per_page_int
 
@@ -128,10 +131,16 @@ def submissions_get_pages(request):
                                                      reg_date_gte_bool, reg_date_gte_convert, reg_date_lte_bool, reg_date_lte_convert)
     # print(custom_filter)
 
-    items = models.OrPodanieIssues.objects.filter(custom_filter).order_by(order_by).values(
-        "id", "br_court_name", "kind_name", "cin", "registration_date", "corporate_body_name", "br_section",
-        "br_insertion", "text", "street", "postal_code", "city"
-    )[page_offset:(page_offset + per_page_int)]
+    if order_type == 'desc':
+        items = models.OrPodanieIssues.objects.filter(custom_filter).order_by(F(order_by).desc(nulls_last=True)).values(
+            "id", "br_court_name", "kind_name", "cin", "registration_date", "corporate_body_name", "br_section",
+            "br_insertion", "text", "street", "postal_code", "city"
+        )[page_offset:(page_offset + per_page_int)]
+    else:
+        items = models.OrPodanieIssues.objects.filter(custom_filter).order_by(F(order_by).asc(nulls_last=True)).values(
+            "id", "br_court_name", "kind_name", "cin", "registration_date", "corporate_body_name", "br_section",
+            "br_insertion", "text", "street", "postal_code", "city"
+        )[page_offset:(page_offset + per_page_int)]
 
     all_items = models.OrPodanieIssues.objects.filter(custom_filter).count()
     pages = math.ceil(all_items / per_page_int)
@@ -176,8 +185,9 @@ def _submissions_post_record_date_validator(body_json, key):
         date = parse_datetime(value)
     except:
         date_bool = False
-
-    if date_bool and date is not None and (datetime.now().year == date.year):
+    print(date)
+    print(parse_datetime(value), type(value))
+    if date_bool and (date is not None) and (datetime.now().year == date.year):
         return 1
 
     return -1
@@ -214,7 +224,7 @@ def _submissions_remove_from_dict(podanie):
     full_model_dict.pop("br_mark", None)
     full_model_dict.pop("br_court_code", None)
     full_model_dict.pop("kind_code", None)
-    full_model_dict.pop("br_insertion", None)
+    # full_model_dict.pop("br_insertion", None)
     full_model_dict.pop("created_at", None)
     full_model_dict.pop("updated_at", None)
     full_model_dict.pop("address_line", None)
@@ -381,7 +391,6 @@ def submissions_put_record(request, table_id=-1):
     return response
 
 
-
 def submissions_delete_record(request, table_id=-1):
     podanie = None
     try:
@@ -420,5 +429,119 @@ def submissions_url_dispatcher(request, table_id=None):
         response = submissions_put_record(request, table_id)
     elif method == 'DELETE':
         response = submissions_delete_record(request, table_id)
+
+    return response
+
+
+def _companies_get_generate_filter(search_string_bool, search_string, reg_date_gte_bool, reg_date_gte_convert,
+                                   reg_date_lte_bool, reg_date_lte_convert):
+
+    search_filter = None
+    date_filter = None
+
+    if search_string_bool:
+        search_filter = (Q(name__icontains=search_string) | Q(address_line__icontains=search_string))
+
+    if reg_date_gte_bool and reg_date_lte_bool:
+        date_filter = (Q(registration_date__gte=reg_date_gte_convert) & Q(registration_date__lte=reg_date_lte_convert))
+    elif reg_date_gte_bool:
+        date_filter = (Q(registration_date__gte=reg_date_gte_convert))
+    elif reg_date_lte_bool:
+        date_filter = (Q(registration_date__lte=reg_date_lte_convert))
+
+    if search_filter is None and date_filter is None:
+        return ~Q(pk=None)
+
+    if search_filter is None:
+        return date_filter
+
+    if date_filter is None:
+        return search_filter
+
+    custom_filter = search_filter & date_filter
+    return custom_filter
+
+
+def companies_get_pages(request):
+    allParameters = request.GET
+
+    page = allParameters.get('page', '1')
+    try:
+        page_int = int(page)
+    except:
+        page_int = 1
+
+    per_page = allParameters.get('per_page', '10')
+    try:
+        per_page_int = int(per_page)
+    except:
+        per_page_int = 10
+
+    search_string = allParameters.get('query')
+    search_string_bool = False
+
+    if search_string is not None:
+        search_string_bool = True
+
+    registration_date_gte = allParameters.get("registration_date_gte")
+    reg_date_gte_bool = True
+    reg_date_gte_convert = None
+    try:
+        reg_date_gte_convert = parse_datetime(registration_date_gte)
+    except:
+        reg_date_gte_bool = False
+
+    registration_date_lte = allParameters.get("registration_date_lte")
+    reg_date_lte_bool = True
+    reg_date_lte_convert = None
+    try:
+        reg_date_lte_convert = parse_datetime(registration_date_lte)
+    except:
+        reg_date_lte_bool = False
+
+    collumn_names = ["cin", "name", "br_section", "address_line", "last_update", "or_podanie_issues_count",
+                     "znizenie_imania_issues_count", "likvidator_issues_count", "konkurz_vyrovnanie_issues_count",
+                     "konkurz_restrukturalizacia_actors_count"]
+    possible_order_types = ["asc", "desc"]
+
+    order_by = allParameters.get("order_by", "cin")
+    order_by = order_by.lower()
+    if order_by not in collumn_names:
+        order_by = "cin"
+
+    default_order_type = "desc"
+    order_type = allParameters.get("order_type", default_order_type)
+    order_type = order_type.lower()
+    if order_type not in possible_order_types:
+        order_type = default_order_type
+
+    page_offset = (page_int - 1) * per_page_int
+
+    custom_filter = _companies_get_generate_filter(search_string_bool, search_string,
+                                                     reg_date_gte_bool, reg_date_gte_convert, reg_date_lte_bool,
+                                                     reg_date_lte_convert)
+    # print(custom_filter)
+
+    if order_type == 'desc':
+        items = models.Companies.objects.filter(custom_filter).order_by(F(order_by).desc(nulls_last=True)).values(
+            "cin", "name", "br_section", "address_line", "last_update"
+        )[page_offset:(page_offset + per_page_int)]
+    else:
+        items = models.Companies.objects.filter(custom_filter).order_by(F(order_by).asc(nulls_last=True)).values(
+            "cin", "name", "br_section", "address_line", "last_update"
+        )[page_offset:(page_offset + per_page_int)]
+
+    # items = models.Companies.objects.annotate(or_podanie_issues_count=Count('cin'))
+    # print(items)
+    # for i in range(10):
+    #     print(items[i].cin)
+
+    all_items = models.Companies.objects.filter(custom_filter).count()
+    pages = math.ceil(all_items / per_page_int)
+    metadata = {"page": page_int, "per_page": per_page_int, "pages": pages, "total": all_items}
+    result = {"items": list(items), "metadata": metadata}
+    result = {"items": list(items)}
+
+    response = JsonResponse(result, safe=False, json_dumps_params={'ensure_ascii': False})
 
     return response
