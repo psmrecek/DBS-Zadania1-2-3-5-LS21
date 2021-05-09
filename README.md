@@ -1,7 +1,7 @@
 # project-str12-lancaric-psmrecek
 project-str12-lancaric-psmrecek created by GitHub Classroom
 
-Riešenie zadania č. 3
+Riešenie zadania č. 5
 
 Vytvorenie aplikačného serveru s API (End-point) s pripojením na databázu
 
@@ -41,3 +41,24 @@ Vzorový vstup pre zadanie 3:
 https://fiit-dbs-xsmrecek-app.azurewebsites.net/v1/companies/?page=2&per_page=13&order_by=or_podanie_issues_count&order_type=asc&last_update_lte=2020-11-21&last_update_gte=2019-11-30&query=Modrý
 
 V AIS je okrem čísla commitu a zdrojových súborov pre Zadanie 3 aj alternatívna query pre migrácie, ktorá funguje rovnako ako tá použitá v zadaní, ale je naozaj JEDNA.
+
+Zadanie 5:
+
+Zadanie 5 funguje podobne ako zadanie 2 a 3.
+
+Pridaná je metóda PUT pre úpravu jedného záznamu a metóda GET pre zobrazenie jedného záznamu.
+
+Vzorový vstup pre PUT:
+
+https://fiit-dbs-xsmrecek-app.azurewebsites.net/v2/ov/submissions/3519145
+
+Vzorové RAW BODY pre PUT:
+`{
+    "kind_name": "zmena1",
+    "cin": 111111
+}`
+
+Vzorový vstup pre GET 1:
+
+https://fiit-dbs-xsmrecek-app.azurewebsites.net/v2/ov/submissions/2974514
+
